@@ -31,8 +31,10 @@ int gen(vector<int> & coins, int cents, int n){
 	return dp[cents][n];
 }
 
-//coin change iterative bottom up
-void count(vector<int> & coins, int cents, int n){
+//coin change iterative bottom up (nm)
+void count(vector<int> & coins, int cents){
+
+	int n = coins.size();
 
 	for(int i = 0 ; i < n ; i++)
 		dp[0][i] = 1;
@@ -49,27 +51,42 @@ void count(vector<int> & coins, int cents, int n){
 
 }
 
+//coin change iterative(n)
+void _count(vector<int> & coins, int cents, vector<ll> & _dp){
+
+	int n = coins.size();
+
+	for(int i = 0 ; i < n ; i++)
+		for(int j = coins[i]; j <= cents ; j++){
+			_dp[j] += _dp[j-coins[i]];
+		}
+
+}
+
 int main(){
 
-	int t;
-	cin >> t;
+	int n;
+	vector<int> vec;
+	while(cin >> n) vec.push_back(n);
 
-	while(t){
+	int may = *max_element(vec.begin(), vec.end());
 
-		int n; cin >> n;
-		vector<int> coins(n);
-		for(int i = 0 ; i < n ; i++)
-			cin >> coins[i];	
-		int cents; cin >> cents;
+	vector<ll> _dp(may+1, 0); 
+	_dp[0] = 1;
 
-		for(int i = 0 ; i <= cents ; i++)
-			fill(dp[i], dp[i] + n, 0);
+	int tem[] = {1,5,10,25,50};
+	vector<int> coins;
+	for(int i = 0 ; i < 5; i++) coins.push_back(tem[i]);
 
-		count(coins, cents, n); cout << dp[cents][n-1] << endl;
-		//cout << gen(coins, cents, n-1) << endl;
+	_count(coins, may, _dp);
 
-	t--;
+	for(int i = 0 ; i < vec.size() ; i++){
+		int n = vec[i];
+		if(_dp[n] == 1) printf("There is only 1 way to produce %lld cents change.",n);
+		else printf("There are %lld ways to produce %lld cents change.",_dp[n] ,n );
+		cout << endl;
 	}
+		
 		
 return 0;	
 }
